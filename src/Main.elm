@@ -19,7 +19,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
 -- MAIN
-main : Program () Model Msg
+main : Program String Model Msg
 main =
     Browser.document
         { init = init
@@ -30,11 +30,14 @@ main =
 
 -- MODEL
 type alias Model =
-    { isDarkMode : Bool }
+    { isDarkMode  : Bool
+    , lastUpdated : String
+    }
 
-init : () -> ( Model, Cmd Msg )
-init _ =
-    ( { isDarkMode = True }, Cmd.none ) -- darkMode ON
+init : String -> ( Model, Cmd Msg )
+init lastUpdated =
+    ( { isDarkMode = True,
+        lastUpdated = lastUpdated}, Cmd.none ) -- darkMode ON
 
 -- UPDATE
 type Msg
@@ -73,6 +76,7 @@ view model =
                 , education
                 , skills
                 , interests
+                , footer model
                 ]
             ]
         ]
@@ -89,23 +93,34 @@ themeToggle isDarkMode =
 
 {-| Format the header of the website. Add title and social media links.
 -}
--- TODO: add picture, email contact
+-- TODO: email contact
+-- TODO: consider using https://github.com/Lattyware/elm-fontawesome for icons
 header : Html Msg
 header =
-    div [ class "header animate-fade-in" ]
-        [ h1 [] [ text name ]
-        , p [ class "title" ] [ text "Functional Programmer & Geek" ]
-        , div [ class "social-links" ]
-            [ a [ href
-                    ("https://github.com/" ++ nameSlug)
-                    , target "_blank", class "button"
-                ] [ text "GitHub" ]
-            , a [ href
-                    ("https://linkedin.com/in/" ++ nameSlug)
-                    , target "_blank", class "button"
-                ] [ text "LinkedIn" ]
+    div [ class "header header-container animate-fade-in" ]
+        [ div [ class "text-container" ]
+            [ h1 [] [ text name ]
+            , p [ class "title" ] [ text "Functional Programmer & Geek" ]
+            , div [ class "social-links" ]
+                [ a [ href
+                        ("https://github.com/" ++ nameSlug)
+                        , target "_blank", class "button social-button"
+                    ] [ text "GitHub" ]
+                , a [ href
+                        ("https://linkedin.com/in/" ++ nameSlug)
+                        , target "_blank", class "button social-button"
+                    ] [ text "LinkedIn" ]
+                {-, a [ href
+                        ("https://linkedin.com/in/" ++ nameSlug)
+                        , target "_blank", class "social-button"
+                    ] [ img [ src "icon.png", class "social-icon" ] []]
+                  -}
+                ]
             ]
+        , div [ class "image-container" ]
+            [ img [ src "https://michalspano.com/michalspano.github.io/assets/images/profile.png", class "profile-pic" ] [] ]
         ]
+
 
 {-| This function creates the introduction text of the website.
 -}
@@ -132,6 +147,16 @@ intro =
                 plan to use the website to share my thoughts and ideas about the
                 world of technology and software development via blog posts.
                    """
+            ]
+        , div [ class "quote-box" ]
+            [
+            blockquote [] [
+                text """
+                     \"The most effective debugging tool is still
+                       careful thought, coupled with judiciously
+                       placed print statements.\" - Brian Kernighan
+                       """
+                ]
             ]
         ]
 
@@ -248,3 +273,15 @@ interests =
                 ]
             )
         ]
+
+footer : Model -> Html msg
+footer model =
+    div [ class "footer animate-fade-in" ]
+        [ text "..."
+        , div []
+            [ text ("© " ++ name ++ " | Written in ")
+            , a [href "https://elm-lang.org/", target "_blank"] [text "Elm"]
+            , text (" | Last updated on " ++ model.lastUpdated)
+            ]
+        ]
+
